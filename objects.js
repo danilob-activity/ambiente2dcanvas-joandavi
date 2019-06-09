@@ -34,13 +34,42 @@ Box.prototype.setRotate = function(theta) {
 
 
 Box.prototype.setScale = function(x, y) {
+
     this.S = scale(x, y);
+}
+
+Box.prototype.setFill = function(color) {
+    this.fill = color;
+}
+
+Box.prototype.tryIntersection = function(b){
+    var inR = invScale(this.S);
+    var inS = invScale(this.S);
+    var inT = invTranslate(this.T);
+    var c = mult(mult(inS, inR), inT);
+    var pLocal = multVec(c,b);
+    var points = [];
+    points.push([this.center[0] + this.width / 2, this.center[1] + this.height / 2, 1]);
+    points.push([this.center[0] - this.width / 2, this.center[1] + this.height / 2, 1]);
+    points.push([this.center[0] - this.width / 2, this.center[1] - this.height / 2, 1]);
+    points.push([this.center[0] + this.width / 2, this.center[1] - this.height / 2, 1]);
+
+    if(pLocal[0] >= points[1][0] && pLocal[0] <= points[0][0]){
+        if(pLocal[1] >= points[2][1] && pLocal[1] <= points[1][1]){
+            return true;
+        }
+        
+    }
+    return false;
+        
+    
+
 }
 
 Box.prototype.draw = function(canv = ctx) { //requer o contexto de desenho
     //pega matriz de tranformação de coordenadas canônicas para coordenadas do canvas
     var M = transformCanvas(WIDTH, HEIGHT);
-    var Mg = mult(M, mult(mult(this.R, this.S), this.T));
+    var Mg = mult(M, mult(mult(this.T, this.R), this.S));
     canv.lineWidth = 2; //largura da borda
     canv.strokeStyle = this.stroke;
     canv.fillStyle = this.fill;
@@ -111,10 +140,23 @@ Circle.prototype.setFill = function(fill) {
     this.fill = fill;
 }
 
+Circle.prototype.tryIntersection = function(b){
+    let c = multVec(mult(mult(invScale(this.S), invRotate(this.R)), invTranslate(this.T)), b);
+    let x = Math.pow(c[0] - this.center[0], 2);
+    let y = Math.pow(c[1] - this.center[1], 2);
+    let d = Math.sqrt(x+y);
+
+    if (d <= this.radius){
+        return true;
+    }else{
+        return false;
+    }
+}
+
 Circle.prototype.draw = function(canv = ctx) { //requer o contexto de desenho
     //pega matriz de tranformação de coordenadas canônicas para coordenadas do canvas
     var M = transformCanvas(WIDTH, HEIGHT);
-    var Mg = mult(M, mult(mult(this.R, this.S), this.T));
+    var Mg = mult(M, mult(mult(this.T, this.R), this.S));
     canv.lineWidth = 2; //largura da borda
     canv.strokeStyle = this.stroke;
     canv.fillStyle = this.fill;

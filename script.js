@@ -12,6 +12,7 @@ canvas.height = HEIGHT;
 
 var objects = []; //lista de objetos
 var objectSelected = null;
+var flag = 1;
 
 function drawCanvas() {
     ctx.clearRect(0, 0, WIDTH, HEIGHT);
@@ -77,3 +78,86 @@ function updatePosition() {
         }
     }
 }
+
+function updateRotation() {
+    if (objectSelected != null) {
+        try {
+            angle = parseFloat(document.getElementById("angle").value);
+            objectSelected.setRotate(angle);
+            drawCanvas();
+        } catch (error) {
+            alert(error);
+        }
+    }
+}
+
+function updateScale() {
+    if (objectSelected != null) {
+        try {
+            posx = parseFloat(document.getElementById("posx_scl").value);
+            posy = parseFloat(document.getElementById("posy_scl").value);
+            objectSelected.setScale(posx, posy);
+            drawCanvas();
+        } catch (error) {
+            alert(error);
+        }
+    }
+}
+function updateFill() {
+    if (objectSelected != null) {
+        try {
+           var color = "#" + document.getElementById("fill").value;
+           
+            objectSelected.setFill(color);
+            drawCanvas();
+        } catch (error) {
+            alert(error);
+        }
+    }
+}
+
+
+function onclickmouse(event){
+    var x = event.offsetX;
+    var y = event.offsetY;
+    objectSelected = null;
+    var b = multVec(transformToUsual(WIDTH, HEIGHT),[x, y, 1]);
+    
+    console.log("X cords: " + b[0] + "  Y cords:" + b[1])
+     
+    for (var i = 0; i < objects.length; i++){
+        if (objects[i].tryIntersection(b)){
+            objectSelected = objects[i];
+            console.log("pegou");
+        }else
+        console.log("nao pegou");
+    }
+}
+
+function overClick(){
+    flag = 0;
+}
+
+function setMove(){
+   flag = 1;
+}
+
+function moveObj(event){
+    console.log("entrou no move    FLAG:" + flag )
+    if(flag == 1){
+        console.log("entrou no primeiro if")
+        if(objectSelected != null){
+            let x = event.offsetX;
+            let y = event.offsetY;
+            let p = multVec(transformToUsual(WIDTH, HEIGHT), [x,y,1]);
+            objectSelected.setTranslate(p[0], p[1]);
+            console.log("rweoneui")
+            drawCanvas(); 
+        }
+    }
+}
+
+
+canvas.addEventListener("dblclick", setMove);
+canvas.addEventListener("mousemove", moveObj);
+canvas.addEventListener("click", overClick);

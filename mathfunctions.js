@@ -6,6 +6,14 @@ function translate(x, y) { // dado dois pontos, x e y constroi a matriz homogene
     ]; //retorna matriz 3x3
 }
 
+function invTranslate(mat){
+    return[
+        [1, 0, -mat[0][2]],
+        [0, 1, -mat[1][2]],
+        [0, 0, 1]
+    ];
+}
+
 //TODO: dado dois pontos, x e y constroi a matriz homogenea de translação 3x3
 function scale(x, y) {
     return [
@@ -13,6 +21,14 @@ function scale(x, y) {
         [0, y, 0],
         [0, 0, 1]
     ]; //retorna matriz 3x3
+}
+
+function invScale(mat){
+        return[
+            [1./mat[0][0], 0, 0],
+            [0, 1./mat[1][1], 0],
+            [0, 0, 1]
+        ];
 }
 
 //TODO: dado um angulo theta em graus constroi a matriz homogenea de rotação 3x3
@@ -25,19 +41,36 @@ function rotate(theta) {
     ]; //retorna matriz 3x3
 }
 
+function invRotate(mat){
+    return [
+        [mat[0][0], mat[1][0], 0],
+        [mat[0][1], mat[1][1], 0],
+        [0, 0, 1]
+    ];
+}
+
 function identity(v = 1) { // identidade
     return [
-        [1 * v, 0, 0],
-        [0, 1 * v, 0],
-        [0, 0, 1 * v]
+     
+        [1 * v,  0  ,   0  ],
+        [  0  ,1 * v,   0  ],
+        [  0  ,  0  , 1 * v]
     ]; //retorna matriz 3x3
 }
 
 function transformCanvas(Width, Height) {
     return [
-        [1, 0, Width / 2.],
+        [1,  0, Width / 2. ],
         [0, -1, Height / 2.],
-        [0, 0, 1]
+        [0,  0,      1     ]
+    ];
+}
+ 
+function transformToUsual(Width, Height) {
+    return [
+        [1,  0, -Width / 2. ],
+        [0, -1, Height / 2.],
+        [0,  0,      1     ]
     ];
 }
 
